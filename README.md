@@ -1,1 +1,1 @@
-## End to End Machine Learning Project
+## SSL Customer Churn Machine Learning Project
