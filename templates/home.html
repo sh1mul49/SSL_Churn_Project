@@ -1,0 +1,24 @@
+<html>
+<body>
+    <div class="login">
+       <h1>Bank SMS Count Estimator</h1>
+   
+       <form action="{{ url_for('predict_datapoint')}}" method="post">
+        <h1>
+            <legend>Bank SMS Count Prediction</legend>
+        </h1>
+
+        <div class="mb-3">
+            <label class="form-label">Previous 30 days sms count</label>
+            <input class="form-control" type="number" name="Previous 30 days sms count"
+                placeholder="Enter previous 30 days sms count" />
+        </div>
+        <div class="mb-3">
+            <input class="btn btn-primary" type="submit" value="Predict your Maths Score" required />
+        </div>
+    </form>
+    <h2>
+       THE  prediction is {{results}}
+    </h2>
+   <body>
+</html>
