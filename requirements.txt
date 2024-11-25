@@ -3,4 +3,7 @@ numpy
 matplotlib
 seaborn
 tensorflow
+scikit-learn
+xgboost
+catboost
 -e .
