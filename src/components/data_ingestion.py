@@ -1,5 +1,6 @@
 import os
 import sys
+import numpy as np
 from src.exception import CustomException
 from sklearn.preprocessing import MinMaxScaler
 from src.logger import logging
