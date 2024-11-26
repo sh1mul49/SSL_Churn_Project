@@ -1,68 +1,76 @@
 import sys
 import os
+import numpy as np
 import pandas as pd
 from src.exception import CustomException
 from src.utils import load_object
+from src.logger import logging
 
 
 class PredictPipeline:
     def __init__(self):
-        pass
+        self.model_path = os.path.join("artifacts", "model.pkl")
 
-    def predict(self,features):
+    def preprocess_for_prediction(self, data: pd.DataFrame):
+        """
+        Preprocess the data to create sequences of 30 lagged values for prediction.
+        """
         try:
-            model_path=os.path.join("artifacts","model.pkl")
-            preprocessor_path=os.path.join('artifacts','preprocessor.pkl')
-            print("Before Loading")
-            model=load_object(file_path=model_path)
-            preprocessor=load_object(file_path=preprocessor_path)
-            print("After Loading")
-            data_scaled=preprocessor.transform(features)
-            preds=model.predict(data_scaled)
-            return preds
-        
-        except Exception as e:
-            raise CustomException(e,sys)
+            logging.info("Preprocessing data for prediction.")
+            if len(data) < 30:
+                raise CustomException("Insufficient data: At least 30 records are required for prediction.")
 
+            sequences = []
+            for i in range(30, len(data)):
+                sequences.append(data.iloc[i-30:i, 0])  # Create sequences of 30 lagged values
+            
+            logging.info("Data preprocessed into sequences.")
+            return np.array(sequences)
+
+        except Exception as e:
+            raise CustomException(e, sys)
+
+    def predict(self, data: pd.DataFrame):
+        """
+        Predict using the pre-trained model.
+        """
+        try:
+            logging.info("Loading the trained model for prediction.")
+            model = load_object(file_path=self.model_path)
+
+            logging.info("Preprocessing data for prediction.")
+            data_sequences = self.preprocess_for_prediction(data)
+
+            logging.info("Making predictions.")
+            predictions = model.predict(data_sequences)
+
+            return predictions
+
+        except Exception as e:
+            raise CustomException(e, sys)
 
 
 class CustomData:
-    def __init__(  self,
-        gender: str,
-        race_ethnicity: str,
-        parental_level_of_education,
-        lunch: str,
-        test_preparation_course: str,
-        reading_score: int,
-        writing_score: int):
-
-        self.gender = gender
-
-        self.race_ethnicity = race_ethnicity
-
-        self.parental_level_of_education = parental_level_of_education
-
-        self.lunch = lunch
-
-        self.test_preparation_course = test_preparation_course
-
-        self.reading_score = reading_score
-
-        self.writing_score = writing_score
+    """
+    Handles raw input data for prediction.
+    """
+    def __init__(self, sms_counts: list):
+        """
+        Args:
+            sms_counts (list): A list of SMS counts (numeric values).
+        """
+        self.sms_counts = sms_counts
 
     def get_data_as_data_frame(self):
-        try:
-            custom_data_input_dict = {
-                "gender": [self.gender],
-                "race_ethnicity": [self.race_ethnicity],
-                "parental_level_of_education": [self.parental_level_of_education],
-                "lunch": [self.lunch],
-                "test_preparation_course": [self.test_preparation_course],
-                "reading_score": [self.reading_score],
-                "writing_score": [self.writing_score],
-            }
+        """
+        Convert the list of SMS counts into a DataFrame.
 
-            return pd.DataFrame(custom_data_input_dict)
+        Returns:
+            pd.DataFrame: DataFrame containing the SMS counts.
+        """
+        try:
+            logging.info("Converting SMS count data to DataFrame.")
+            return pd.DataFrame({"sms_count": self.sms_counts})
 
         except Exception as e:
             raise CustomException(e, sys)

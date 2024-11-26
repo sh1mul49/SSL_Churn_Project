@@ -1,24 +1,26 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Prediction</title>
+</head>
 <body>
-    <div class="login">
-       <h1>Bank SMS Count Estimator</h1>
-   
-       <form action="{{ url_for('predict_datapoint')}}" method="post">
-        <h1>
-            <legend>Bank SMS Count Prediction</legend>
-        </h1>
-
-        <div class="mb-3">
-            <label class="form-label">Previous 30 days sms count</label>
-            <input class="form-control" type="number" name="Previous 30 days sms count"
-                placeholder="Enter previous 30 days sms count" />
-        </div>
-        <div class="mb-3">
-            <input class="btn btn-primary" type="submit" value="Predict your Maths Score" required />
-        </div>
+    <h1>Predict SMS Counts</h1>
+    <form action="/predictdata" method="post">
+        <label for="sms_counts">Enter SMS counts (comma-separated):</label><br>
+        <input type="text" id="sms_counts" name="sms_counts" placeholder="100,110,120,..." required><br><br>
+        <button type="submit">Predict</button>
     </form>
-    <h2>
-       THE  prediction is {{results}}
-    </h2>
-   <body>
+
+    {% if results %}
+    <h2>Predictions:</h2>
+    <p>{{ results }}</p>
+    {% endif %}
+
+    {% if error %}
+    <h2>Error:</h2>
+    <p>{{ error }}</p>
+    {% endif %}
+</body>
 </html>
